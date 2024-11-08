@@ -1,0 +1,38 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.integrate import odeint
+
+# we can take input from user as well..
+R = 1.0  # Resistance (Ohms)
+L = 0.5  # Inductance (H)
+K = 0.1  # Motor constant (Nm/A)
+J = 0.01 # Inertia (kg*m^2)
+b = 0.1  # Damping coefficient (Nms)
+
+def motor_system(y, t, V):
+    i, omega = y
+    di_dt = (V - R * i - K * omega) / L
+    domega_dt = (K * i - b * omega) / J
+    return [di_dt, domega_dt]
+
+# Simulation parameters
+V = 12.0  # Applied voltage (V)
+y0 = [0.0, 0.0]  # Initial conditions: [current, angular velocity]
+t = np.linspace(0, 5, 100)  # Time array
+
+
+solution = odeint(motor_system, y0, t, args=(V,))
+i, omega = solution.T
+
+plt.figure()
+plt.subplot(2, 1, 1)
+plt.plot(t, i)
+plt.title('DC Motor Drive Simulation')
+plt.ylabel('Current (A)')
+
+plt.subplot(2, 1, 2)
+plt.plot(t, omega)
+plt.xlabel('Time (s)')
+plt.ylabel('Angular Velocity (rad/s)')
+
+plt.show()
